@@ -17,6 +17,11 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - uses: vmactions/freebsd-vm@v1
+      if: ${{ inputs.os == 'FreeBSD' }}
+      with:
+        run: freebsd-version
+
     - uses: actions/setup-python@v5
       with:
         python-version: 3.12
