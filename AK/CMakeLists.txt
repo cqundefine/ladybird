@@ -61,6 +61,10 @@ find_package(FastFloat CONFIG REQUIRED)
 swizzle_target_properties_for_swift(FastFloat::fast_float)
 target_link_libraries(AK PRIVATE FastFloat::fast_float)
 
+if (HAIKU)
+    target_link_libraries(AK PRIVATE bsd)
+endif()
+
 # FIXME: Make this generic for all imported shared library dependencies and apply globally
 if (BUILD_SHARED_LIBS AND NOT CMAKE_SKIP_INSTALL_RULES AND NOT "${VCPKG_INSTALLED_DIR}" STREQUAL "")
     install(IMPORTED_RUNTIME_ARTIFACTS simdutf::simdutf

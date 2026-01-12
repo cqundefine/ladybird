@@ -1,0 +1,30 @@
+diff --git a/src/common/system_utils_linux.cpp b/src/common/system_utils_linux.cpp
+index 7dd681d..ec97492 100644
+--- a/src/common/system_utils_linux.cpp
++++ b/src/common/system_utils_linux.cpp
+@@ -59,6 +59,8 @@ void SetCurrentThreadName(const char *name)
+     // There's a 15-character (16 including '\0') limit.  If the name is too big (and ERANGE is
+     // returned), name will be ignored.
+     ASSERT(strlen(name) < 16);
++#ifndef __HAIKU__
+     pthread_setname_np(pthread_self(), name);
++#endif
+ }
+ }  // namespace angle
+diff --git a/src/common/system_utils_posix.cpp b/src/common/system_utils_posix.cpp
+index 76c5c99..ce2cc3a 100644
+--- a/src/common/system_utils_posix.cpp
++++ b/src/common/system_utils_posix.cpp
+@@ -210,10 +210,12 @@ void *OpenSystemLibraryWithExtensionAndGetError(const char *libraryName,
+     }
+ 
+     int extraFlags = 0;
++#ifndef __HAIKU__
+     if (searchType == SearchType::AlreadyLoaded)
+     {
+         extraFlags = RTLD_NOLOAD;
+     }
++#endif
+ 
+     std::string fullPath = directory + libraryName;
+     return OpenPosixLibrary(fullPath, extraFlags, errorOut);

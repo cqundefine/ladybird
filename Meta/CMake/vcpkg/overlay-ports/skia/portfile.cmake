@@ -14,7 +14,8 @@ vcpkg_from_github(
         vulkan-headers.patch
         pdfsubsetfont-uwp.diff
         skparagraph-gni.diff
-	    fix-freebsd.patch
+        fix-freebsd.patch
+	fix-haiku.patch
 )
 
 # De-vendor
@@ -134,9 +135,7 @@ else()
     string(APPEND OPTIONS " is_component_build=false")
 endif()
 
-if(VCPKG_TARGET_IS_FREEBSD)
-    string(APPEND OPTIONS " skia_use_dng_sdk=false")
-endif()
+string(APPEND OPTIONS " skia_use_dng_sdk=false")
 
 set(required_externals
     dng_sdk

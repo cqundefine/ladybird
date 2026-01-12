@@ -128,7 +128,7 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    if platform.host_system != HostSystem.Windows and os.geteuid() == 0:
+    if not platform.host_system in (HostSystem.Windows, HostSystem.Haiku) and os.geteuid() == 0:
         print("Do not run ladybird.py as root, your Build directory will become root-owned", file=sys.stderr)
         sys.exit(1)
     elif platform.host_system == HostSystem.Windows and "VCINSTALLDIR" not in os.environ:
@@ -176,7 +176,7 @@ def main():
         build_main(build_dir, args.jobs, "install", args.args)
     elif args.command == "vcpkg":
         configure_build_env(args.preset)
-        build_vcpkg()
+        #build_vcpkg()
     elif args.command == "clean":
         clean_main(args.preset)
     elif args.command == "rebuild":
@@ -191,7 +191,7 @@ def main():
 
 def configure_main(platform: Platform, preset: str, cc: str, cxx: str) -> Path:
     ladybird_source_dir, build_preset_dir = configure_build_env(preset)
-    build_vcpkg()
+    #build_vcpkg()
 
     if build_preset_dir.joinpath("build.ninja").exists() or build_preset_dir.joinpath("ladybird.sln").exists():
         return build_preset_dir

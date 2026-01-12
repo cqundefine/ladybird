@@ -50,6 +50,7 @@ vcpkg_from_github(
     PATCHES
         001-fix-builder-error.patch
         fix-freebsd.patch
+	fix-haiku.patch
 )
 
 # Generate angle_commit.h
@@ -81,7 +82,7 @@ vcpkg_download_distfile(GNI_TO_CMAKE_PY
 )
 
 # Generate CMake files from GN / GNI files
-x_vcpkg_get_python_packages(PYTHON_VERSION "3" OUT_PYTHON_VAR "PYTHON3" PACKAGES ply)
+#x_vcpkg_get_python_packages(PYTHON_VERSION "3" OUT_PYTHON_VAR "PYTHON3")
 
 set(_root_gni_files_to_convert
   "compiler.gni Compiler.cmake"
@@ -98,7 +99,7 @@ foreach(_root_gni_file IN LISTS _root_gni_files_to_convert)
   list(GET _file_values 0 _src_gn_file)
   list(GET _file_values 1 _dst_file)
   vcpkg_execute_required_process(
-      COMMAND "${PYTHON3}" "${GNI_TO_CMAKE_PY}" "src/${_src_gn_file}" "${_dst_file}"
+      COMMAND "python3" "${GNI_TO_CMAKE_PY}" "src/${_src_gn_file}" "${_dst_file}"
       WORKING_DIRECTORY "${SOURCE_PATH}"
       LOGNAME "gni-to-cmake-${_dst_file}-${TARGET_TRIPLET}"
   )
@@ -110,7 +111,7 @@ foreach(_renderer_gn_file IN LISTS _renderer_gn_files_to_convert)
   list(GET _file_values 1 _dst_file)
   get_filename_component(_src_dir "${_src_gn_file}" DIRECTORY)
   vcpkg_execute_required_process(
-      COMMAND "${PYTHON3}" "${GNI_TO_CMAKE_PY}" "src/${_src_gn_file}" "${_dst_file}" --prepend "src/${_src_dir}/"
+      COMMAND "python3" "${GNI_TO_CMAKE_PY}" "src/${_src_gn_file}" "${_dst_file}" --prepend "src/${_src_dir}/"
       WORKING_DIRECTORY "${SOURCE_PATH}"
       LOGNAME "gni-to-cmake-${_dst_file}-${TARGET_TRIPLET}"
   )

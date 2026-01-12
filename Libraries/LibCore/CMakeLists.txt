@@ -33,6 +33,10 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "NetBSD")
     # NetBSD has its shm_open and shm_unlink functions in librt so we need to link that
     target_link_libraries(LibCoreMinimal PRIVATE rt)
 endif()
+if (HAIKU)
+    # Haiku has networking related functions in the network library and getprogname in the bsd library
+    target_link_libraries(LibCoreMinimal PRIVATE bsd network)
+endif()
 
 if (LAGOM_TOOLS_ONLY)
     return()
@@ -120,8 +124,8 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "SunOS")
     target_link_libraries(LibCore PRIVATE nsl socket)
 endif()
 if (HAIKU)
-    # Haiku has networking related functions in the network library
-    target_link_libraries(LibCore PRIVATE network)
+    # Haiku has networking related functions in the network library and getprogname in the bsd library
+    target_link_libraries(LibCore PRIVATE bsd network)
 endif()
 
 if (APPLE)

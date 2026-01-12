@@ -10,7 +10,7 @@
     },
     {
       "name": "angle",
-      "platform": "linux | windows | android | freebsd"
+      "platform": "linux | windows | android | freebsd | haiku"
     },
     {
       "name": "curl",
@@ -52,11 +52,11 @@
     },
     {
       "name": "fontconfig",
-      "platform": "linux | freebsd | openbsd | osx | windows"
+      "platform": "linux | freebsd | openbsd | osx | windows | haiku"
     },
     {
       "name": "harfbuzz",
-      "platform": "linux | freebsd | openbsd | windows",
+      "platform": "linux | freebsd | openbsd | windows | haiku",
       "features": [
         "freetype",
         "icu"
@@ -173,7 +173,7 @@
     },
     {
       "name": "skia",
-      "platform": "linux | freebsd | openbsd | windows",
+      "platform": "linux | freebsd | openbsd | windows | haiku",
       "features": [
         "freetype",
         "fontconfig",

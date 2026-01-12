@@ -19,7 +19,7 @@ class HostSystem(enum.IntEnum):
     macOS = enum.auto()
     Windows = enum.auto()
     BSD = enum.auto()
-
+    Haiku = enum.auto()
 
 class Platform:
     def __init__(self):
@@ -32,6 +32,8 @@ class Platform:
             self.host_system = HostSystem.Linux
         elif self.system in ("FreeBSD", "OpenBSD", "NetBSD", "DragonFly"):
             self.host_system = HostSystem.BSD
+        elif self.system == "Haiku":
+            self.host_system = HostSystem.Haiku
         else:
             print(f"Unsupported host system {self.system}", file=sys.stderr)
             sys.exit(1)

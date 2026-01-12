@@ -98,7 +98,7 @@ Optional<StringView> get(StringView name, [[maybe_unused]] SecureOnly secure)
     // Note the explicit null terminators above.
 
     // FreeBSD < 14, Android, generic BSDs, and Windows do not support secure_getenv.
-#if (defined(__FreeBSD__) && __FreeBSD__ >= 14) || (!defined(AK_OS_BSD_GENERIC) && !defined(AK_OS_ANDROID) && !defined(AK_OS_WINDOWS))
+#if (defined(__FreeBSD__) && __FreeBSD__ >= 14) || (!defined(AK_OS_BSD_GENERIC) && !defined(AK_OS_ANDROID) && !defined(AK_OS_WINDOWS) && !defined(AK_OS_HAIKU))
     char* result;
     if (secure == SecureOnly::Yes) {
         result = ::secure_getenv(builder.string_view().characters_without_null_termination());

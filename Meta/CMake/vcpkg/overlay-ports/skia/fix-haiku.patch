@@ -1,0 +1,112 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index 1242739..f0d3a00 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -570,7 +570,9 @@ if (skia_compile_modules) {
+       sources += skia_ports_windows_sources
+     } else {
+       sources += [ "src/ports/SkOSFile_posix.cpp" ]
+-      libs += [ "dl" ]
++      if (!is_haiku) {
++        libs += [ "dl" ]
++      }
+     }
+     sources += skia_sksl_core_sources
+     sources += skia_sksl_codegen_sources
+@@ -697,7 +699,9 @@ if (skia_compile_sksl_tests) {
+       sources += skia_ports_windows_sources
+     } else {
+       sources += [ "src/ports/SkOSFile_posix.cpp" ]
+-      libs += [ "dl" ]
++      if (!is_haiku) {
++        libs += [ "dl" ]
++      }
+     }
+     sources += skia_sksl_codegen_sources
+     sources += skia_sksl_core_sources
+@@ -962,7 +966,7 @@ optional("gpu") {
+       if (defined(ndk_api) && ndk_api >= 26) {
+         libs += [ "android" ]
+       }
+-    } else if (skia_use_egl) {
++    } else if (skia_use_egl || is_haiku) {
+       if (skia_use_epoxy_egl) {
+         sources += [ "src/gpu/ganesh/gl/epoxy/GrGLMakeEpoxyEGLInterface.cpp" ]
+         libs += [ "epoxy" ]
+@@ -975,11 +979,11 @@ optional("gpu") {
+       }
+     } else if (skia_use_webgl) {
+       sources += [ "src/gpu/ganesh/gl/webgl/GrGLMakeNativeInterface_webgl.cpp" ]
+-    } else if (is_linux && skia_use_x11) {
+-      sources += [
+-        "src/gpu/ganesh/gl/glx/GrGLMakeGLXInterface.cpp",
+-        "src/gpu/ganesh/gl/glx/GrGLMakeNativeInterface_glx.cpp",
+-      ]
++    } else if (is_linux && skia_use_x11 && !is_haiku) {
++      #sources += [
++      #  "src/gpu/ganesh/gl/glx/GrGLMakeGLXInterface.cpp",
++      #  "src/gpu/ganesh/gl/glx/GrGLMakeNativeInterface_glx.cpp",
++      #]
+       libs += [ "GL" ]
+     } else if (is_mac) {
+       sources += [ "src/gpu/ganesh/gl/mac/GrGLMakeNativeInterface_mac.cpp" ]
+@@ -1533,7 +1537,9 @@ skia_component("skia") {
+     if (is_ios) {
+       sources += [ "src/ports/SkOSFile_ios.h" ]
+     }
+-    libs += [ "dl" ]
++    if (!is_haiku) {
++      libs += [ "dl" ]
++    }
+   }
+ 
+   if (is_android) {
+@@ -1549,7 +1555,7 @@ skia_component("skia") {
+     ]
+   }
+ 
+-  if (is_linux || is_wasm) {
++  if (is_linux || is_wasm || is_haiku) {
+     sources += [ "src/ports/SkDebug_stdio.cpp" ]
+     if (skia_use_egl) {
+       libs += [ "GLESv2" ]
+diff --git a/gn/BUILDCONFIG.gn b/gn/BUILDCONFIG.gn
+index 146ad60..789cc59 100644
+--- a/gn/BUILDCONFIG.gn
++++ b/gn/BUILDCONFIG.gn
+@@ -71,6 +71,7 @@ is_linux = current_os == "linux"
+ is_mac = current_os == "mac"
+ is_wasm = current_os == "wasm"
+ is_win = current_os == "win"
++is_haiku = current_os == "haiku"
+ 
+ # This is just to make the Dawn build files happy. Skia itself uses target_os = "linux"
+ # for ChromeOS, so this variable will not affect Skia proper.
+diff --git a/include/private/base/SkTArray.h b/include/private/base/SkTArray.h
+index ea6cd07..4ea383d 100644
+--- a/include/private/base/SkTArray.h
++++ b/include/private/base/SkTArray.h
+@@ -562,7 +562,7 @@ private:
+ 
+     // Note for 32-bit machines kMaxCapacity will be <= SIZE_MAX. For 64-bit machines it will
+     // just be INT_MAX if the sizeof(T) < 2^32.
+-    static constexpr int kMaxCapacity = SkToInt(std::min(SIZE_MAX / sizeof(T), (size_t)INT_MAX));
++    static constexpr int kMaxCapacity = SkToInt(std::min((size_t)SIZE_MAX / sizeof(T), (size_t)INT_MAX));
+ 
+     void setDataFromBytes(SkSpan<std::byte> allocation) {
+         T* data = TCast(allocation.data());
+diff --git a/src/ports/SkMemory_malloc.cpp b/src/ports/SkMemory_malloc.cpp
+index d784af5..48c533d 100644
+--- a/src/ports/SkMemory_malloc.cpp
++++ b/src/ports/SkMemory_malloc.cpp
+@@ -120,7 +120,9 @@ size_t sk_malloc_size(void* addr, size_t size) {
+     size_t completeSize = size;
+ 
+     // Use the OS specific calls to find the actual capacity.
+-    #if defined(SK_BUILD_FOR_MAC) || defined(SK_BUILD_FOR_IOS)
++    #if defined(__HAIKU__)
++	
++    #elif defined(SK_BUILD_FOR_MAC) || defined(SK_BUILD_FOR_IOS)
+         // TODO: remove the max, when the chrome implementation of malloc_size doesn't return 0.
+         completeSize = std::max(malloc_size(addr), size);
+     #elif defined(SK_BUILD_FOR_ANDROID) && __ANDROID_API__ >= 17

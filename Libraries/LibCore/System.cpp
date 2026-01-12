@@ -674,7 +674,7 @@ ErrorOr<Array<int, 2>> pipe2(int flags)
 {
     Array<int, 2> fds;
 
-#if defined(__unix__)
+#if defined(__unix__) && !defined(AK_OS_HAIKU)
     if (::pipe2(fds.data(), flags) < 0)
         return Error::from_syscall("pipe2"sv, errno);
 #else
